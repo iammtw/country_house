@@ -1,3 +1,5 @@
+import 'package:country_house/screens/all_countries.dart';
+import 'package:country_house/screens/country.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -5,7 +7,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,18 +16,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: AllCountries(),
-    );
-  }
-}
-
-class AllCountries extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('All Countries'),
-        centerTitle: true,
-      ),
     );
   }
 }
