@@ -17,9 +17,8 @@ class Country extends StatelessWidget {
       body: Container(
         padding: EdgeInsets.all(20),
         child: GridView(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-          ),
+          gridDelegate:
+              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
           children: [
             OurCard(
               title: "Capital",
@@ -45,7 +44,7 @@ class Country extends StatelessWidget {
               value: country['currencies'][0]['name'],
               backColor: Colors.deepPurple,
             ),
-            CountryCard(title: "Show on Map"),
+            // CountryCard(title: "Show on Map"),
           ],
         ),
       ),

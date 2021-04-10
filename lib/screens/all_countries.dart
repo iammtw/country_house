@@ -8,10 +8,11 @@ class AllCountries extends StatefulWidget {
 }
 
 class _AllCountriesState extends State<AllCountries> {
-  Future<List> countries;
+  List countries = [];
+  List filteredCountries = [];
   bool isSearching = false;
 
-  Future<List> getCountries() async {
+  getCountries() async {
     var response = await Dio().get("https://restcountries.eu/rest/v2/all");
     return (response.data);
   }
@@ -19,8 +20,17 @@ class _AllCountriesState extends State<AllCountries> {
   @override
   void initState() {
     super.initState();
-    this.setState(() {
-      countries = getCountries();
+    getCountries().then((data) => this.setState(() {
+          countries = filteredCountries = data;
+        }));
+  }
+
+  void _filterCountries(value) {
+    setState(() {
+      filteredCountries = countries
+          .where((country) =>
+              country['name'].toLowerCase().contains(value.toLowerCase()))
+          .toList();
     });
   }
 
@@ -31,6 +41,9 @@ class _AllCountriesState extends State<AllCountries> {
         title: !isSearching
             ? Text('All Countries')
             : TextField(
+                onChanged: (val) {
+                  _filterCountries(val);
+                },
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   icon: Icon(
@@ -60,6 +73,7 @@ class _AllCountriesState extends State<AllCountries> {
                   onPressed: () {
                     this.setState(() {
                       this.isSearching = false;
+                      filteredCountries = countries;
                     });
                   },
                 ),
@@ -67,40 +81,38 @@ class _AllCountriesState extends State<AllCountries> {
       ),
       body: Container(
         padding: EdgeInsets.all(10),
-        child: FutureBuilder<List>(
-          future: countries,
-          // ignore: missing_return
-          builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                  itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Country(
-                          country: snapshot.data[index],
+        child: filteredCountries.length > 0
+            ? ListView.builder(
+                itemCount: filteredCountries.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Country(
+                            country: filteredCountries[index],
+                          ),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 10,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 8),
+                        child: Text(
+                          filteredCountries[index]['name'],
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
-                    );
-                  },
-                  child: Card(
-                    elevation: 10,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 8),
-                      child: Text(
-                        snapshot.data[index]['name'],
-                        style: TextStyle(fontSize: 18),
-                      ),
                     ),
-                  ),
-                );
-              });
-            }
-          },
-        ),
+                  );
+                },
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
       ),
     );
   }
